@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: api-oha-benchmarker
+cadvisor:
+  browser-opener:
+    enabled: false
+load-test-runner:
+  pause-millis: 3000
+  num-requests-and-concurrency:
+    - 100:100
+    - 300:300
+    - 900:900
+    - 2700:2700
+  app-containers:
+    sb-web-jvm:
+      docker-image-name: spring-boot-greetings-api-web:jvm
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-web-jvm-cds:
+      docker-image-name: spring-boot-greetings-api-web:jvm-cds
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-web-jvm-cds-aot:
+      docker-image-name: spring-boot-greetings-api-web:jvm-cds-aot
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-web-native:
+      docker-image-name: spring-boot-greetings-api-web:native
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-web-jvm-vt:
+      docker-image-name: spring-boot-greetings-api-web:jvm
+      endpoint: /greetings
+      environment:
+        - SPRING_THREADS_VIRTUAL_ENABLED=true
+      app-type: spring-boot
+    sb-web-jvm-cds-vt:
+      docker-image-name: spring-boot-greetings-api-web:jvm-cds
+      endpoint: /greetings
+      environment:
+        - SPRING_THREADS_VIRTUAL_ENABLED=true
+      app-type: spring-boot
+    sb-web-jvm-cds-aot-vt:
+      docker-image-name: spring-boot-greetings-api-web:jvm-cds-aot-vt
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-web-native-vt:
+      docker-image-name: spring-boot-greetings-api-web:native-vt
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-reactive-jvm:
+      docker-image-name: spring-boot-greetings-api-reactive:jvm
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-reactive-jvm-cds:
+      docker-image-name: spring-boot-greetings-api-reactive:jvm-cds
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-reactive-jvm-cds-aot:
+      docker-image-name: spring-boot-greetings-api-reactive:jvm-cds-aot
+      endpoint: /greetings
+      app-type: spring-boot
+    sb-reactive-native:
+      docker-image-name: spring-boot-greetings-api-reactive:native
+      endpoint: /greetings
+      app-type: spring-boot
