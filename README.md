@@ -1,33 +1,40 @@
 # api-oha-benchmarker
 
-### Reference Documentation
-For further reference, please consider the following sections:
+`api-oha-benchmarker` is a tool to easily benchmark APIs. It uses [`Testcontainers`](https://testcontainers.com/) to manage Docker containers. The load testing is done with [`OHA`](https://github.com/hatoo/oha). To collect information like CPU and memory usage, it uses the [`docker stats`](https://docs.docker.com/reference/cli/docker/container/stats/) command. It also uses [`cAdvisor`](https://github.com/google/cadvisor) to visually monitor CPU and memory usage.
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.3.2/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.3.2/maven-plugin/reference/html/#build-image)
-* [Spring Boot Testcontainers support](https://docs.spring.io/spring-boot/docs/3.3.2/reference/html/features.html#features.testing.testcontainers)
-* [Validation](https://docs.spring.io/spring-boot/docs/3.3.2/reference/htmlsingle/index.html#io.validation)
-* [Testcontainers](https://java.testcontainers.org/)
+## Prerequisites
 
-### Guides
-The following guides illustrate how to use some features concretely:
+- [`Java 21+`](https://www.oracle.com/java/technologies/downloads/#java21)
+- [`Docker`](https://www.docker.com/)
 
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
+## Configuration
 
-### Testcontainers support
+All the configuration is done in the `application.yaml` where you can set:
 
-This project uses [Testcontainers at development time](https://docs.spring.io/spring-boot/docs/3.3.2/reference/html/features.html#features.testing.testcontainers.at-development-time).
+- Should `cAdvisor` open the webpage with container statistics?
+  - Property: `cadvisor.browser-opener.enabled`
+  - Default: `false`
+- Number of requests and concurrency:
+  - Property: `load-test-runner.num-requests-and-concurrency`
+  - Default: list containing `100:100`, `300:300`, `900:900`, and `2700:2700`
+- Pause between request submissions:
+  - Property: `load-test-runner.pause-millis`
+  - Default: `3000`
+- Applications Docker containers to run:
+  - Property: `load-test-runner.app-containers`
+  - Configuration map:
+    ```
+    <docker-container-name>:
+      docker-image-name: <name of the Docker image to use>
+      endpoint: <endpoint to call>
+      app-type: <application type: spring-boot, quarkus, or micronaut>
+      environment: <list of environment variables for the container>
+    ```
 
-Testcontainers has been configured to use the following Docker images:
+## How to run
 
-
-Please review the tags of the used images and set them to the same as you're running in production.
-
-### Maven Parent overrides
-
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
-
+- In a terminal, make sure you are inside the `api-oha-benchmarker` root folder;
+- Run the following command:
+  ```
+  ./mvnw clean spring-boot:run
+  ```
