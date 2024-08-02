@@ -5,7 +5,6 @@ import com.ivanfranchin.apiohabenchmarker.result.LoadTestResult;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -20,58 +19,66 @@ import java.util.Set;
 public class ResultFileWriter {
 
     private static final Path FILE_PATH = Paths.get("load_test_results_%s.txt".formatted(System.currentTimeMillis()));
-    private static final String SEPARATOR = "----------------------------------------";
 
     public static void write(Map<String, AppResult> appResultMap) {
-        writeValuedToFile(SEPARATOR, StandardOpenOption.CREATE_NEW);
+        createNewFile();
         writeAllOhaMetrics(appResultMap);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeStartUpTimeAndMaxCpuAndMaxMemUsage(appResultMap);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeStatUpTime(appResultMap);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeMaxCpuUsage(appResultMap);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeMaxMemUsage(appResultMap);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeSpecificOhaMetric(appResultMap, "Total(secs)", 1);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeSpecificOhaMetric(appResultMap, "Average(secs)", 4);
-        writeValuedToFile(SEPARATOR, StandardOpenOption.APPEND);
+        newLine();
         writeSpecificOhaMetric(appResultMap, "Requests/sec", 5);
     }
 
     private static void writeStartUpTimeAndMaxCpuAndMaxMemUsage(Map<String, AppResult> appResultMap) {
-        writeValuedToFile("Application\tStatUpTime(sec)\tMax CPU(%)\tMax Memory(MB)", StandardOpenOption.APPEND);
+        String fmtHeader = "%25s | %15s | %11s | %14s |";
+        String fmtDivisor = "%25s + %15s + %11s + %14s |";
+        String fmtMetric = "%25s | %15.4f | %11.2f | %14.2f |";
+
+        String header = fmtHeader.formatted("Application", "StatUpTime(sec)", "Max CPU(%)", "Max Memory(MB)");
+        writeValuedToFile(header);
+
+        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(15), hdChars(11), hdChars(14));
+        writeValuedToFile(divisor);
+
         for (String appName : appResultMap.keySet()) {
             AppResult appResult = appResultMap.get(appName);
-            String line = String.format(Locale.US, "%s\t%.4f\t%.2f\t%.2f",
+            String line = String.format(Locale.US, fmtMetric,
                     appName, appResult.startUpTime(), appResult.maxCpuUsage(), appResult.maxMemUsage());
-            writeValuedToFile(line, StandardOpenOption.APPEND);
+            writeValuedToFile(line);
         }
     }
 
     private static void writeStatUpTime(Map<String, AppResult> appResultMap) {
-        writeValuedToFile("Application\tStatUpTime(sec)", StandardOpenOption.APPEND);
+        writeValuedToFile("Application\tStatUpTime(sec)");
         for (String appName : appResultMap.keySet()) {
             String line = String.format(Locale.US, "%s\t%.4f", appName, appResultMap.get(appName).startUpTime());
-            writeValuedToFile(line, StandardOpenOption.APPEND);
+            writeValuedToFile(line);
         }
     }
 
     private static void writeMaxCpuUsage(Map<String, AppResult> appResultMap) {
-        writeValuedToFile("Application\tMax CPU(%)", StandardOpenOption.APPEND);
+        writeValuedToFile("Application\tMax CPU(%)");
         for (String appName : appResultMap.keySet()) {
             String line = String.format(Locale.US, "%s\t%.2f", appName, appResultMap.get(appName).maxCpuUsage());
-            writeValuedToFile(line, StandardOpenOption.APPEND);
+            writeValuedToFile(line);
         }
     }
 
     private static void writeMaxMemUsage(Map<String, AppResult> appResultMap) {
-        writeValuedToFile("Application\tMax Memory(MB)", StandardOpenOption.APPEND);
+        writeValuedToFile("Application\tMax Memory(MB)");
         for (String appName : appResultMap.keySet()) {
             String line = String.format(Locale.US, "%s\t%.2f", appName, appResultMap.get(appName).maxMemUsage());
-            writeValuedToFile(line, StandardOpenOption.APPEND);
+            writeValuedToFile(line);
         }
     }
 
@@ -91,7 +98,7 @@ public class ResultFileWriter {
         for (String numRequestAndConcurrency : numRequestAndConcurrencySet) {
             sb.append(String.format("\t%s", numRequestAndConcurrency));
         }
-        writeValuedToFile(sb.toString(), StandardOpenOption.APPEND);
+        writeValuedToFile(sb.toString());
 
         for (String appName : map.keySet()) {
             sb = new StringBuilder();
@@ -99,19 +106,27 @@ public class ResultFileWriter {
             for (Double val : map.get(appName)) {
                 sb.append(String.format(Locale.US, "\t%.4f", val));
             }
-            writeValuedToFile(sb.toString(), StandardOpenOption.APPEND);
+            writeValuedToFile(sb.toString());
         }
     }
 
     private static void writeAllOhaMetrics(Map<String, AppResult> appResultMap) {
-        String header = "Application\tnumRequests\tConcurrency\tSuccess rate(%)\tTotal(secs)\tSlowest(secs)\tFastest(secs)\tAverage(secs)\tRequests/sec";
-        writeValuedToFile(header, StandardOpenOption.APPEND);
+        String fmtHeader = "%25s | %11s | %11s | %15s | %11s | %13s | %13s | %13s | %12s |";
+        String fmtDivisor = "%25s + %11s + %11s + %15s + %11s + %13s + %13s + %13s + %12s |";
+        String fmtMetric = "%25s | %11d | %11d | %15.2f | %11.4f | %13.4f | %13.4f | %13.4f | %12.4f |";
 
+        String header = fmtHeader.formatted("Application", "numRequests", "Concurrency", "Success rate(%)", "Total(secs)", "Slowest(secs)", "Fastest(secs)", "Average(secs)", "Requests/sec");
+        writeValuedToFile(header);
+
+        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(11), hdChars(11), hdChars(15), hdChars(11), hdChars(13), hdChars(13), hdChars(13), hdChars(12));
+        writeValuedToFile(divisor);
+
+        int count = 0;
         for (String appName : appResultMap.keySet()) {
             for (LoadTestResult result : appResultMap.get(appName).loadTestResults()) {
                 String line = String.format(
                         Locale.US,
-                        "%s\t%s\t%s\t%.2f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f",
+                        fmtMetric,
                         appName,
                         result.numRequests(),
                         result.concurrency(),
@@ -122,14 +137,43 @@ public class ResultFileWriter {
                         result.ohaMetrics()[4],
                         result.ohaMetrics()[5]
                 );
-                writeValuedToFile(line, StandardOpenOption.APPEND);
+                writeValuedToFile(line);
+            }
+            count++;
+            if (count < appResultMap.size()) {
+                divisor = fmtDivisor.formatted(mdChars(25), mdChars(11), mdChars(11), mdChars(15), mdChars(11), mdChars(13), mdChars(13), mdChars(13), mdChars(12));
+                writeValuedToFile(divisor);
             }
         }
     }
 
-    private static void writeValuedToFile(String line, OpenOption... openOption) {
+    private static String hdChars(int len) {
+        return genChars(len, '-');
+    }
+
+    private static String mdChars(int len) {
+        return genChars(len, '.');
+    }
+
+    private static String genChars(int len, char c) {
+        return String.valueOf(c).repeat(Math.max(0, len));
+    }
+
+    private static void createNewFile() {
         try {
-            Files.writeString(FILE_PATH, line + System.lineSeparator(), openOption);
+            Files.createFile(FILE_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void newLine() {
+        writeValuedToFile("");
+    }
+
+    private static void writeValuedToFile(String line) {
+        try {
+            Files.writeString(FILE_PATH, line + System.lineSeparator(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
