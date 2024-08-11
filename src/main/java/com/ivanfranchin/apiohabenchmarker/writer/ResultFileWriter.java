@@ -26,7 +26,7 @@ public class ResultFileWriter {
         newLine();
         writeStartUpTimeAndMaxCpuAndMaxMemUsage(appResultMap);
         newLine();
-        writeStatUpTime(appResultMap);
+        writeStartUpTime(appResultMap);
         newLine();
         writeMaxCpuUsage(appResultMap);
         newLine();
@@ -40,14 +40,14 @@ public class ResultFileWriter {
     }
 
     private static void writeStartUpTimeAndMaxCpuAndMaxMemUsage(Map<String, AppResult> appResultMap) {
-        String fmtHeader = "%25s | %15s | %11s | %14s |";
-        String fmtDivisor = "%25s + %15s + %11s + %14s |";
-        String fmtMetric = "%25s | %15.4f | %11.2f | %14.2f |";
+        String fmtHeader = "%25s | %16s | %11s | %14s |";
+        String fmtDivisor = "%25s + %16s + %11s + %14s |";
+        String fmtMetric = "%25s | %16.4f | %11.2f | %14.2f |";
 
-        String header = fmtHeader.formatted("Application", "StatUpTime(sec)", "Max CPU(%)", "Max Memory(MB)");
+        String header = fmtHeader.formatted("Application", "StartUpTime(sec)", "Max CPU(%)", "Max Memory(MB)");
         writeValuedToFile(header);
 
-        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(15), hdChars(11), hdChars(14));
+        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(16), hdChars(11), hdChars(14));
         writeValuedToFile(divisor);
 
         for (String appName : appResultMap.keySet()) {
@@ -58,8 +58,8 @@ public class ResultFileWriter {
         }
     }
 
-    private static void writeStatUpTime(Map<String, AppResult> appResultMap) {
-        writeValuedToFile("Application\tStatUpTime(sec)");
+    private static void writeStartUpTime(Map<String, AppResult> appResultMap) {
+        writeValuedToFile("Application\tStartUpTime(sec)");
         for (String appName : appResultMap.keySet()) {
             String line = String.format(Locale.US, "%s\t%.4f", appName, appResultMap.get(appName).startUpTime());
             writeValuedToFile(line);
