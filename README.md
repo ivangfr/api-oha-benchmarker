@@ -40,5 +40,5 @@ All the configuration is done in the `application.yaml` where you can set:
 - In a terminal, make sure you are inside the `api-oha-benchmarker` root folder;
 - Run the following command:
   ```
-  ./mvnw clean spring-boot:run
+  ./mvnw clean spring-boot:run -Dspring-boot.run.profiles=springboot
   ```

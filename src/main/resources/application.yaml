@@ -4,6 +4,9 @@ spring:
 cadvisor:
   browser-opener:
     enabled: false
+---
+spring:
+  config.activate.on-profile: springboot
 load-test-runner:
   num-requests-and-concurrency:
     - 100:100

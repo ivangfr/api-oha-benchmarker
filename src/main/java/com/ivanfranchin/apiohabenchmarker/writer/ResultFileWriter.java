@@ -40,14 +40,14 @@ public class ResultFileWriter {
     }
 
     private static void writeStartUpTimeAndMaxCpuAndMaxMemUsage(Map<String, AppResult> appResultMap) {
-        String fmtHeader = "%25s | %16s | %11s | %14s |";
-        String fmtDivisor = "%25s + %16s + %11s + %14s |";
-        String fmtMetric = "%25s | %16.4f | %11.2f | %14.2f |";
+        String fmtHeader = "%25s | %16s | %10s | %14s |";
+        String fmtDivisor = "%25s + %16s + %10s + %14s |";
+        String fmtMetric = "%25s | %16.4f | %10.2f | %14.2f |";
 
         String header = fmtHeader.formatted("Application", "StartUpTime(sec)", "Max CPU(%)", "Max Memory(MB)");
         writeValuedToFile(header);
 
-        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(16), hdChars(11), hdChars(14));
+        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(16), hdChars(10), hdChars(14));
         writeValuedToFile(divisor);
 
         for (String appName : appResultMap.keySet()) {
