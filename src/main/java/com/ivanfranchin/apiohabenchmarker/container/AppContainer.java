@@ -2,7 +2,11 @@ package com.ivanfranchin.apiohabenchmarker.container;
 
 import com.ivanfranchin.apiohabenchmarker.properties.AppContainerConfig;
 import lombok.Getter;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+import org.springframework.util.StringUtils;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
@@ -16,13 +20,10 @@ public class AppContainer extends GenericContainer<AppContainer> {
     private static final Duration STARTUP_TIMEOUT = Duration.ofMinutes(2);
 
     private final int exposedPort;
-    private final String endpoint;
 
     public AppContainer(String containerName, AppContainerConfig config) {
         super(DockerImageName.parse(config.dockerImageName()));
         this.exposedPort = config.exposedPort() == null ? DEFAULT_PORT : config.exposedPort();
-        this.endpoint = config.endpoint().startsWith("/") ?
-                config.endpoint().substring(1) : config.endpoint();
 
         AppContainer container = withExposedPorts(exposedPort)
                 .waitingFor(Wait.forListeningPort().withStartupTimeout(STARTUP_TIMEOUT))
@@ -30,6 +31,9 @@ public class AppContainer extends GenericContainer<AppContainer> {
                         .withName(containerName)
                         .withHostConfig(cmd.getHostConfig().withMemory(MAX_MEMORY))
                 );
+        if (StringUtils.hasText(config.network())) {
+            container.withNetwork(getNetworkByName(config.network()));
+        }
         if (config.environment() != null) {
             for (String envStr : config.environment()) {
                 String[] envArr = envStr.split("=");
@@ -40,5 +44,23 @@ public class AppContainer extends GenericContainer<AppContainer> {
 
     public int getHostPort() {
         return this.getMappedPort(exposedPort);
+    }
+
+    private Network getNetworkByName(String networkName) {
+        return new Network() {
+            @Override
+            public String getId() {
+                return networkName;
+            }
+
+            @Override
+            public void close() {
+            }
+
+            @Override
+            public Statement apply(Statement base, Description description) {
+                return null;
+            }
+        };
     }
 }

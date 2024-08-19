@@ -13,10 +13,9 @@ public record AppContainerConfig(
         List<String> environment,
         Integer exposedPort,
 
-        @NotBlank
-        String endpoint,
-
         @NotNull
-        AppType appType
+        AppType appType,
+
+        String network
 ) {
 }

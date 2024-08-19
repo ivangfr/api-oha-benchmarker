@@ -22,7 +22,7 @@ public class LoadTestRunnerProperties {
     private Integer pauseMillis;
 
     @NotNull
-    private List<String> numRequestsAndConcurrency;
+    private List<OhaParameter> ohaParameters;
 
     @NotNull
     private Map<String, AppContainerConfig> appContainers;

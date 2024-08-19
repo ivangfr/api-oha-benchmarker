@@ -111,14 +111,14 @@ public class ResultFileWriter {
     }
 
     private static void writeAllOhaMetrics(Map<String, AppResult> appResultMap) {
-        String fmtHeader = "%25s | %11s | %11s | %15s | %11s | %13s | %13s | %13s | %12s |";
-        String fmtDivisor = "%25s + %11s + %11s + %15s + %11s + %13s + %13s + %13s + %12s |";
-        String fmtMetric = "%25s | %11d | %11d | %15.2f | %11.4f | %13.4f | %13.4f | %13.4f | %12.4f |";
+        String fmtHeader = "%25s | %11s | %11s | %25s | %15s | %11s | %13s | %13s | %13s | %12s |";
+        String fmtDivisor = "%25s + %11s + %11s + %25s + %15s + %11s + %13s + %13s + %13s + %12s |";
+        String fmtMetric = "%25s | %11d | %11d | %25s | %15.2f | %11.4f | %13.4f | %13.4f | %13.4f | %12.4f |";
 
-        String header = fmtHeader.formatted("Application", "numRequests", "Concurrency", "Success rate(%)", "Total(secs)", "Slowest(secs)", "Fastest(secs)", "Average(secs)", "Requests/sec");
+        String header = fmtHeader.formatted("Application", "numRequests", "Concurrency", "Endpoint", "Success rate(%)", "Total(secs)", "Slowest(secs)", "Fastest(secs)", "Average(secs)", "Requests/sec");
         writeValuedToFile(header);
 
-        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(11), hdChars(11), hdChars(15), hdChars(11), hdChars(13), hdChars(13), hdChars(13), hdChars(12));
+        String divisor = fmtDivisor.formatted(hdChars(25), hdChars(11), hdChars(11), hdChars(25), hdChars(15), hdChars(11), hdChars(13), hdChars(13), hdChars(13), hdChars(12));
         writeValuedToFile(divisor);
 
         int count = 0;
@@ -130,6 +130,7 @@ public class ResultFileWriter {
                         appName,
                         result.numRequests(),
                         result.concurrency(),
+                        result.endpoint(),
                         result.ohaMetrics()[0],
                         result.ohaMetrics()[1],
                         result.ohaMetrics()[2],
@@ -141,7 +142,7 @@ public class ResultFileWriter {
             }
             count++;
             if (count < appResultMap.size()) {
-                divisor = fmtDivisor.formatted(mdChars(25), mdChars(11), mdChars(11), mdChars(15), mdChars(11), mdChars(13), mdChars(13), mdChars(13), mdChars(12));
+                divisor = fmtDivisor.formatted(mdChars(25), mdChars(11), mdChars(11), mdChars(25), mdChars(15), mdChars(11), mdChars(13), mdChars(13), mdChars(13), mdChars(12));
                 writeValuedToFile(divisor);
             }
         }

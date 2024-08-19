@@ -8,62 +8,58 @@ cadvisor:
 spring:
   config.activate.on-profile: springboot
 load-test-runner:
-  num-requests-and-concurrency:
-    - 100:100
-    - 300:300
-    - 900:900
-    - 2700:2700
+  ohaParameters:
+    - numRequests: 100
+      concurrency: 100
+      endpoint: /greetings
+    - numRequests: 300
+      concurrency: 300
+      endpoint: /greetings
+    - numRequests: 900
+      concurrency: 900
+      endpoint: /greetings
+    - numRequests: 2700
+      concurrency: 2700
+      endpoint: /greetings
   pause-millis: 3000
   app-containers:
     sb-web-jvm:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm
-      endpoint: /greetings
       app-type: spring-boot
     sb-web-jvm-cds:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds
-      endpoint: /greetings
       app-type: spring-boot
     sb-web-jvm-cds-aot:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds-aot
-      endpoint: /greetings
       app-type: spring-boot
     sb-web-native:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-native
-      endpoint: /greetings
       app-type: spring-boot
     sb-web-jvm-vt:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm
-      endpoint: /greetings
       environment:
         - SPRING_THREADS_VIRTUAL_ENABLED=true
       app-type: spring-boot
     sb-web-jvm-cds-vt:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds
-      endpoint: /greetings
       environment:
         - SPRING_THREADS_VIRTUAL_ENABLED=true
       app-type: spring-boot
     sb-web-jvm-cds-aot-vt:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds-aot-vt
-      endpoint: /greetings
       app-type: spring-boot
     sb-web-native-vt:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-native-vt
-      endpoint: /greetings
       app-type: spring-boot
     sb-reactive-jvm:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-jvm
-      endpoint: /greetings
       app-type: spring-boot
     sb-reactive-jvm-cds:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-jvm-cds
-      endpoint: /greetings
       app-type: spring-boot
     sb-reactive-jvm-cds-aot:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-jvm-cds-aot
-      endpoint: /greetings
       app-type: spring-boot
     sb-reactive-native:
       docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-native
-      endpoint: /greetings
       app-type: spring-boot

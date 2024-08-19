@@ -8,6 +8,7 @@ import com.ivanfranchin.apiohabenchmarker.processor.OhaProcessor;
 import com.ivanfranchin.apiohabenchmarker.properties.AppContainerConfig;
 import com.ivanfranchin.apiohabenchmarker.properties.AppType;
 import com.ivanfranchin.apiohabenchmarker.properties.LoadTestRunnerProperties;
+import com.ivanfranchin.apiohabenchmarker.properties.OhaParameter;
 import com.ivanfranchin.apiohabenchmarker.result.AppResult;
 import com.ivanfranchin.apiohabenchmarker.result.LoadTestResult;
 import com.ivanfranchin.apiohabenchmarker.writer.ResultFileWriter;
@@ -60,13 +61,13 @@ public class LoadTestRunner implements CommandLineRunner {
                     browserOpener.open(appContainer.getContainerId(), cadvisorContainer.getHostPort());
 
                     List<LoadTestResult> loadTestResults = new LinkedList<>();
-                    for (String numReqsAndConcStr : properties.getNumRequestsAndConcurrency()) {
-                        String[] numReqsAndConcArr = numReqsAndConcStr.split(":");
-                        int numRequests = Integer.parseInt(numReqsAndConcArr[0]);
-                        int concurrency = Integer.parseInt(numReqsAndConcArr[1]);
-                        double[] ohaMetrics = ohaProcessor.run(
-                                numRequests, concurrency, appContainer.getHostPort(), appContainer.getEndpoint());
-                        loadTestResults.add(new LoadTestResult(numRequests, concurrency, ohaMetrics));
+                    for (OhaParameter ohaParameter : properties.getOhaParameters()) {
+                        int numRequests = ohaParameter.numRequests();
+                        int concurrency = ohaParameter.concurrency();
+                        String endpoint = ohaParameter.endpoint().startsWith("/") ?
+                                ohaParameter.endpoint().substring(1) : ohaParameter.endpoint();
+                        double[] ohaMetrics = ohaProcessor.run(numRequests, concurrency, appContainer.getHostPort(), endpoint);
+                        loadTestResults.add(new LoadTestResult(numRequests, concurrency, endpoint, ohaMetrics));
 
                         pause();
                     }
