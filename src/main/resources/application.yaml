@@ -24,42 +24,97 @@ load-test-runner:
   pause-millis: 3000
   app-containers:
     sb-web-jvm:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm
       app-type: spring-boot
     sb-web-jvm-cds:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm-cds
       app-type: spring-boot
     sb-web-jvm-cds-aot:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds-aot
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm-cds-aot
       app-type: spring-boot
     sb-web-native:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-native
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-native
       app-type: spring-boot
     sb-web-jvm-vt:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm
       environment:
         - SPRING_THREADS_VIRTUAL_ENABLED=true
       app-type: spring-boot
     sb-web-jvm-cds-vt:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm-cds
       environment:
         - SPRING_THREADS_VIRTUAL_ENABLED=true
       app-type: spring-boot
     sb-web-jvm-cds-aot-vt:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-jvm-cds-aot-vt
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm-cds-aot-vt
       app-type: spring-boot
     sb-web-native-vt:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.2-21-native-vt
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-native-vt
       app-type: spring-boot
     sb-reactive-jvm:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-jvm
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.4-21-jvm
       app-type: spring-boot
     sb-reactive-jvm-cds:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-jvm-cds
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.4-21-jvm-cds
       app-type: spring-boot
     sb-reactive-jvm-cds-aot:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-jvm-cds-aot
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.4-21-jvm-cds-aot
       app-type: spring-boot
     sb-reactive-native:
-      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.2-21-native
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.4-21-native
       app-type: spring-boot
+---
+spring:
+  config.activate.on-profile: frameworks
+load-test-runner:
+  ohaParameters:
+    - numRequests: 100
+      concurrency: 100
+      endpoint: /greetings
+    - numRequests: 300
+      concurrency: 300
+      endpoint: /greetings
+    - numRequests: 900
+      concurrency: 900
+      endpoint: /greetings
+    - numRequests: 2700
+      concurrency: 2700
+      endpoint: /greetings
+  pause-millis: 3000
+  app-containers:
+    sb-web-jvm:
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-jvm
+      app-type: spring-boot
+    q-web-jvm:
+      docker-image-name: ivanfranchin/quarkus-greetings-api-web:3.15.1-21-jvm
+      app-type: quarkus
+    m-web-jvm:
+      docker-image-name: ivanfranchin/micronaut-greetings-api-web:4.6.3-21-jvm
+      app-type: micronaut
+    sb-reactive-jvm:
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.4-21-jvm
+      app-type: spring-boot
+    q-reactive-jvm:
+      docker-image-name: ivanfranchin/quarkus-greetings-api-reactive:3.15.1-21-jvm
+      app-type: quarkus
+    m-reactive-jvm:
+      docker-image-name: ivanfranchin/micronaut-greetings-api-reactive:4.6.3-21-jvm
+      app-type: micronaut
+    sb-web-native:
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-web:3.3.4-21-native
+      app-type: spring-boot
+    q-web-native:
+      docker-image-name: ivanfranchin/quarkus-greetings-api-web:3.15.1-21-native
+      app-type: quarkus
+    m-web-native:
+      docker-image-name: ivanfranchin/micronaut-greetings-api-web:4.6.3-21-native
+      app-type: micronaut
+    sb-reactive-native:
+      docker-image-name: ivanfranchin/spring-boot-greetings-api-reactive:3.3.4-21-native
+      app-type: spring-boot
+    q-reactive-native:
+      docker-image-name: ivanfranchin/quarkus-greetings-api-reactive:3.15.1-21-native
+      app-type: quarkus
+    m-reactive-native:
+      docker-image-name: ivanfranchin/micronaut-greetings-api-reactive:4.6.3-21-native
+      app-type: micronaut
