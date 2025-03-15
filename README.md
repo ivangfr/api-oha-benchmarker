@@ -1,10 +1,10 @@
 # api-oha-benchmarker
 
-`api-oha-benchmarker` is a tool to easily benchmark APIs. It uses [`Testcontainers`](https://testcontainers.com/) to manage Docker containers. The load testing is done with [`OHA`](https://github.com/hatoo/oha). To collect information like CPU and memory usage, it uses the [`docker stats`](https://docs.docker.com/reference/cli/docker/container/stats/) command. It also uses [`cAdvisor`](https://github.com/google/cadvisor) to visually monitor CPU and memory usage.
+`api-oha-benchmarker` is a tool to easily benchmark APIs. It uses [`Testcontainers`](https://testcontainers.com/) to manage Docker containers. Load testing is done with [`OHA`](https://github.com/hatoo/oha). To collect information such as CPU and memory usage, it uses the [`docker stats`](https://docs.docker.com/reference/cli/docker/container/stats/) command. It also uses [`cAdvisor`](https://github.com/google/cadvisor) to visually monitor CPU and memory usage.
 
 ## Proof-of-Concepts & Articles
 
-On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-Concepts (PoCs) and articles. You can easily search for the technology you are interested in by using the filter. Who knows, perhaps I have already implemented a PoC or written an article about what you are looking for.
+On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-Concepts (PoCs) and articles. You can easily search for the technology you are interested in using the filter. Who knows, perhaps I have already implemented a PoC or written an article about what you are looking for.
 
 ## Additional Readings
 
@@ -22,8 +22,8 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 
 ## Prerequisites
 
-- [`Java 21+`](https://www.oracle.com/java/technologies/downloads/#java21)
-- [`Docker`](https://www.docker.com/)
+- [`Java 21`](https://www.oracle.com/java/technologies/downloads/#java21) or higher;
+- A containerization tool (e.g., [`Docker`](https://www.docker.com), [`Podman`](https://podman.io), etc.)
 
 ## Configuration
 
