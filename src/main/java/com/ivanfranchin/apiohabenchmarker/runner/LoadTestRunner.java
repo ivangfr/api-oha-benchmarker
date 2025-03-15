@@ -14,6 +14,7 @@ import com.ivanfranchin.apiohabenchmarker.result.LoadTestResult;
 import com.ivanfranchin.apiohabenchmarker.writer.ResultFileWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,19 @@ public class LoadTestRunner implements CommandLineRunner {
     private final OhaProcessor ohaProcessor;
     private final LoadTestRunnerProperties properties;
 
+    @Value("${cadvisor.enabled}")
+    private boolean isCadvisorEnabled;
+
+    @Value("${cadvisor.browser-opener.enabled}")
+    private boolean isOpenBrowserEnabled;
+
     @Override
     public void run(String... args) {
 
         try (CadvisorContainer cadvisorContainer = new CadvisorContainer()) {
-            cadvisorContainer.start();
+            if (isCadvisorEnabled) {
+                cadvisorContainer.start();
+            }
 
             Map<String, AppResult> appResultMap = new LinkedHashMap<>();
             for (String appContainerName : properties.getAppContainers().keySet()) {
@@ -58,7 +67,9 @@ public class LoadTestRunner implements CommandLineRunner {
                     double startUpTime = getStartUpTime(appContainer, config.appType());
                     log.info("StartUp time: {}s", startUpTime);
 
-                    browserOpener.open(appContainer.getContainerId(), cadvisorContainer.getHostPort());
+                    if (isCadvisorEnabled && isOpenBrowserEnabled) {
+                        browserOpener.open(appContainer.getContainerId(), cadvisorContainer.getHostPort());
+                    }
 
                     List<LoadTestResult> loadTestResults = new LinkedList<>();
                     for (OhaParameter ohaParameter : properties.getOhaParameters()) {

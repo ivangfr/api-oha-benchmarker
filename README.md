@@ -29,6 +29,9 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 
 All the configuration is done in the `application.yaml` where you can set:
 
+- Is `cAdvisor` enabled?
+  - Property: `cadvisor.enabled`
+  - Default: `false`
 - Should `cAdvisor` open the webpage with container statistics?
   - Property: `cadvisor.browser-opener.enabled`
   - Default: `false`

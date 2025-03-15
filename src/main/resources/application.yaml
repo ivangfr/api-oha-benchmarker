@@ -2,6 +2,7 @@ spring:
   application:
     name: api-oha-benchmarker
 cadvisor:
+  enabled: false
   browser-opener:
     enabled: false
 ---
