@@ -37,8 +37,8 @@ public class LoadTestRunner implements CommandLineRunner {
     @Value("${cadvisor.enabled}")
     private boolean isCadvisorEnabled;
 
-    @Value("${cadvisor.browser-opener.enabled}")
-    private boolean isOpenBrowserEnabled;
+    @Value("${cadvisor.open-browser}")
+    private boolean openBrowser;
 
     @Override
     public void run(String... args) {
@@ -58,7 +58,7 @@ public class LoadTestRunner implements CommandLineRunner {
                     log.info("-----------------------------");
                     log.info("Load testing {} with config {}", appContainerName, config);
 
-                    pause();
+                    waitForContainerToStart();
 
                     DockerStatsProcessor dockerStatsProcessor = new DockerStatsProcessor(appContainerName);
                     Thread dockerStatsProcessorThread = new Thread(dockerStatsProcessor);
@@ -67,7 +67,7 @@ public class LoadTestRunner implements CommandLineRunner {
                     double startUpTime = getStartUpTime(appContainer, config.appType());
                     log.info("StartUp time: {}s", startUpTime);
 
-                    if (isCadvisorEnabled && isOpenBrowserEnabled) {
+                    if (isCadvisorEnabled && openBrowser) {
                         browserOpener.open(appContainer.getContainerId(), cadvisorContainer.getHostPort());
                     }
 
@@ -80,7 +80,7 @@ public class LoadTestRunner implements CommandLineRunner {
                         double[] ohaMetrics = ohaProcessor.run(numRequests, concurrency, appContainer.getHostPort(), endpoint);
                         loadTestResults.add(new LoadTestResult(numRequests, concurrency, endpoint, ohaMetrics));
 
-                        pause();
+                        pauseBetweenTests();
                     }
 
                     dockerStatsProcessor.stop();
@@ -96,8 +96,18 @@ public class LoadTestRunner implements CommandLineRunner {
         }
     }
 
-    private void pause() {
-        int millis = properties.getPauseMillis();
+    private void waitForContainerToStart() {
+        int millis = properties.getWaitForContainerToStartMillis();
+        log.info("[ Waiting container to start. {} ms ]", millis);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void pauseBetweenTests() {
+        int millis = properties.getPauseBetweenTestsMillis();
         log.info("[ Pausing for {} ms ]", millis);
         try {
             Thread.sleep(millis);

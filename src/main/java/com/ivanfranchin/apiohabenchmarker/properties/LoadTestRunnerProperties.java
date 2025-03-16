@@ -18,8 +18,11 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "load-test-runner")
 public class LoadTestRunnerProperties {
 
+    @Min(3000)
+    private Integer waitForContainerToStartMillis;
+
     @Min(1000)
-    private Integer pauseMillis;
+    private Integer pauseBetweenTestsMillis;
 
     @NotNull
     private List<OhaParameter> ohaParameters;

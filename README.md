@@ -33,7 +33,7 @@ All the configuration is done in the `application.yaml` where you can set:
   - Property: `cadvisor.enabled`
   - Default: `false`
 - Should `cAdvisor` open the webpage with container statistics?
-  - Property: `cadvisor.browser-opener.enabled`
+  - Property: `cadvisor.open-browser`
   - Default: `false`
 - Number of requests and concurrency:
   - Property: `load-test-runner.num-requests-and-concurrency`
