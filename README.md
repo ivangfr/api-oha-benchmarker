@@ -44,7 +44,7 @@ All the configuration is done in the `application.yaml` where you can set:
 - Applications Docker containers to run:
   - Property: `load-test-runner.app-containers`
   - Configuration map:
-    ```
+    ```text
     <docker-container-name>:
       docker-image-name: <name of the Docker image to use>
       endpoint: <endpoint to call>
@@ -56,6 +56,6 @@ All the configuration is done in the `application.yaml` where you can set:
 
 - In a terminal, make sure you are inside the `api-oha-benchmarker` root folder;
 - Run the following command:
-  ```
+  ```bash
   ./mvnw clean spring-boot:run -Dspring-boot.run.profiles=springboot
   ```
