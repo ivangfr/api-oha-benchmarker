@@ -120,3 +120,41 @@ load-test-runner:
     m-reactive-native:
       docker-image-name: ivanfranchin/micronaut-greetings-api-reactive:4.7.6-21-native
       app-type: micronaut
+---
+spring:
+  config.activate.on-profile: webserver
+load-test-runner:
+  ohaParameters:
+    - numRequests: 100
+      concurrency: 100
+      endpoint: /greetings
+    - numRequests: 300
+      concurrency: 300
+      endpoint: /greetings
+    - numRequests: 900
+      concurrency: 900
+      endpoint: /greetings
+    - numRequests: 2700
+      concurrency: 2700
+      endpoint: /greetings
+  wait-for-container-to-start-millis: 5000
+  pause-between-tests-millis: 3000
+  app-containers:
+    greetings-api-tomcat:
+      docker-image-name: greetings-api-tomcat:3.4.4-21
+      app-type: spring-boot
+    greetings-api-jetty:
+      docker-image-name: greetings-api-jetty:3.4.4-21
+      app-type: spring-boot
+    greetings-api-undertow:
+      docker-image-name: greetings-api-undertow:3.4.4-21
+      app-type: spring-boot
+    greetings-api-tomcat-vt:
+      docker-image-name: greetings-api-tomcat:3.4.4-21-vt
+      app-type: spring-boot
+    greetings-api-jetty-vt:
+      docker-image-name: greetings-api-jetty:3.4.4-21-vt
+      app-type: spring-boot
+    greetings-api-undertow-vt:
+      docker-image-name: greetings-api-undertow:3.4.4-21-vt
+      app-type: spring-boot
