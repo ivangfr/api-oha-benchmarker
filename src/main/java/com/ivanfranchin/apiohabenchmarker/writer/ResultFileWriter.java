@@ -32,9 +32,9 @@ public class ResultFileWriter {
         newLine();
         writeMaxMemUsage(appResultMap);
         newLine();
-        writeSpecificOhaMetric(appResultMap, "Total(secs)", 1);
+        writeSpecificOhaMetric(appResultMap, "Total(sec)", 1);
         newLine();
-        writeSpecificOhaMetric(appResultMap, "Average(secs)", 4);
+        writeSpecificOhaMetric(appResultMap, "Average(sec)", 4);
         newLine();
         writeSpecificOhaMetric(appResultMap, "Requests/sec", 5);
     }
@@ -115,7 +115,7 @@ public class ResultFileWriter {
         String fmtDivisor = "%25s + %11s + %11s + %25s + %15s + %11s + %13s + %13s + %13s + %12s |";
         String fmtMetric = "%25s | %11d | %11d | %25s | %15.2f | %11.4f | %13.4f | %13.4f | %13.4f | %12.4f |";
 
-        String header = fmtHeader.formatted("Application", "numRequests", "Concurrency", "Endpoint", "Success rate(%)", "Total(secs)", "Slowest(secs)", "Fastest(secs)", "Average(secs)", "Requests/sec");
+        String header = fmtHeader.formatted("Application", "numRequests", "Concurrency", "Endpoint", "Success rate(%)", "Total(sec)", "Slowest(sec)", "Fastest(sec)", "Average(sec)", "Requests/sec");
         writeValuedToFile(header);
 
         String divisor = fmtDivisor.formatted(hdChars(25), hdChars(11), hdChars(11), hdChars(25), hdChars(15), hdChars(11), hdChars(13), hdChars(13), hdChars(13), hdChars(12));

@@ -137,24 +137,21 @@ load-test-runner:
     - numRequests: 2700
       concurrency: 2700
       endpoint: /greetings
+    - numRequests: 8100
+      concurrency: 8100
+      endpoint: /greetings
   wait-for-container-to-start-millis: 5000
   pause-between-tests-millis: 3000
   app-containers:
     greetings-api-tomcat:
-      docker-image-name: greetings-api-tomcat:3.4.4-21
+      docker-image-name: greetings-api-tomcat:4.0.0-25
       app-type: spring-boot
     greetings-api-jetty:
-      docker-image-name: greetings-api-jetty:3.4.4-21
-      app-type: spring-boot
-    greetings-api-undertow:
-      docker-image-name: greetings-api-undertow:3.4.4-21
+      docker-image-name: greetings-api-jetty:4.0.0-25
       app-type: spring-boot
     greetings-api-tomcat-vt:
-      docker-image-name: greetings-api-tomcat:3.4.4-21-vt
+      docker-image-name: greetings-api-tomcat:4.0.0-25-vt
       app-type: spring-boot
     greetings-api-jetty-vt:
-      docker-image-name: greetings-api-jetty:3.4.4-21-vt
-      app-type: spring-boot
-    greetings-api-undertow-vt:
-      docker-image-name: greetings-api-undertow:3.4.4-21-vt
+      docker-image-name: greetings-api-jetty:4.0.0-25-vt
       app-type: spring-boot

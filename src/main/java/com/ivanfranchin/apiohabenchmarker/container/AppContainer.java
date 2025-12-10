@@ -2,8 +2,6 @@ package com.ivanfranchin.apiohabenchmarker.container;
 
 import com.ivanfranchin.apiohabenchmarker.properties.AppContainerConfig;
 import lombok.Getter;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -55,11 +53,6 @@ public class AppContainer extends GenericContainer<AppContainer> {
 
             @Override
             public void close() {
-            }
-
-            @Override
-            public Statement apply(Statement base, Description description) {
-                return null;
             }
         };
     }

@@ -22,9 +22,14 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 - \[**Medium**\] [**Performance Benchmark: Spring Boot 3.3.4 vs. Quarkus 3.15.1 vs. Micronaut 4.6.3**](https://medium.com/@ivangfr/performance-benchmark-spring-boot-3-3-4-vs-quarkus-3-15-1-vs-micronaut-4-6-3-9691c4cfcb2a)
 - \[**Medium**\] [**Performance Benchmark: Spring Boot 3.4.3 vs. Quarkus 3.19.3 vs. Micronaut 4.7.6**](https://medium.com/@ivangfr/performance-benchmark-spring-boot-3-4-3-vs-quarkus-3-19-3-vs-micronaut-4-7-6-aaadfb0382b4)
 
+### Embedded Web Server Benchmark
+
+- \[**Medium**\] [**What is the Best Embedded Web Server for Spring Boot version 3.3.2: Tomcat vs. Jetty vs. Undertow**](https://medium.com/@ivangfr/choosing-the-best-embedded-web-server-for-your-spring-boot-app-tomcat-vs-jetty-vs-undertow-0086427d124e)
+- \[**Medium**\] [**What is the Best Embedded Web Server for Spring Boot version 3.4.4: Tomcat vs. Jetty vs. Undertow**](https://medium.com/@ivangfr/what-is-the-best-embedded-web-server-for-spring-boot-version-3-4-4-tomcat-vs-jetty-vs-undertow-c9186a510301)
+
 ## Prerequisites
 
-- [`Java 21`](https://www.oracle.com/java/technologies/downloads/#java21) or higher;
+- [`Java 25`](https://www.oracle.com/java/technologies/downloads/#java25) or higher;
 - A containerization tool (e.g., [`Docker`](https://www.docker.com), [`Podman`](https://podman.io), etc.)
 
 ## Configuration

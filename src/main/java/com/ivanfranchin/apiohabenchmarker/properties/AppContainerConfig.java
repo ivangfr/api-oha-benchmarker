@@ -6,16 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record AppContainerConfig(
-
-        @NotBlank
-        String dockerImageName,
-
+        @NotBlank String dockerImageName,
         List<String> environment,
         Integer exposedPort,
-
-        @NotNull
-        AppType appType,
-
-        String network
-) {
+        @NotNull AppType appType,
+        String network) {
 }

@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 @Component
 public class OhaProcessor {
 
-    private static final String OHA_COMMAND = "oha -n %s -c %s --latency-correction --disable-keepalive --disable-color --no-tui http://localhost:%s/%s";
+    private static final String OHA_COMMAND = "oha -n %s -c %s -u s --latency-correction --disable-keepalive --disable-color --no-tui http://localhost:%s/%s";
 
     public double[] run(int numRequests, int concurrency, int containerMappedPort, String endpoint) {
         double[] ohaMetrics;
@@ -49,12 +49,12 @@ public class OhaProcessor {
     private double parseValue(String line) {
         int colonIdx = line.indexOf(':');
         int percentIdx = line.indexOf('%');
-        int secsIdx = line.indexOf("secs");
+        int secIdx = line.indexOf(" sec");
         String val;
         if (percentIdx >= 0) {
             val = line.substring(colonIdx + 1, percentIdx);
-        } else if (secsIdx >= 0) {
-            val = line.substring(colonIdx + 1, secsIdx - 1);
+        } else if (secIdx >= 0) {
+            val = line.substring(colonIdx + 1, secIdx);
         } else {
             val = line.substring(colonIdx + 1);
         }

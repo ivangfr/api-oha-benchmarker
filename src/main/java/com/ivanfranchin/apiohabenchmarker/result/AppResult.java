@@ -6,6 +6,5 @@ public record AppResult(
         double startUpTime,
         double maxCpuUsage,
         double maxMemUsage,
-        List<LoadTestResult> loadTestResults
-) {
+        List<LoadTestResult> loadTestResults) {
 }
