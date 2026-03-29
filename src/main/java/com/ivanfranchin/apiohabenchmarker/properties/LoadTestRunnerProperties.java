@@ -1,6 +1,7 @@
 package com.ivanfranchin.apiohabenchmarker.properties;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,5 +27,6 @@ public class LoadTestRunnerProperties {
     private List<OhaParameter> ohaParameters;
 
     @NotNull
+    @NotEmpty
     private Map<String, AppContainerConfig> appContainers;
 }
