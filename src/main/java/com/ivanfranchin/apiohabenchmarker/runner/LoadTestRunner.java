@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -34,11 +32,6 @@ import com.ivanfranchin.apiohabenchmarker.writer.ResultFileWriter;
 @Component
 public class LoadTestRunner implements CommandLineRunner {
 
-  private static final Pattern PATTERN_SPRING_BOOT = Pattern.compile("in ([\\d.]+) seconds");
-  private static final Pattern PATTERN_QUARKUS = Pattern.compile("started in ([\\d.]+)s");
-  private static final Pattern PATTERN_MICRONAUT =
-      Pattern.compile("Startup completed in ([\\d.]+)ms");
-
   private final BrowserOpener browserOpener;
   private final OhaProcessor ohaProcessor;
   private final LoadTestRunnerProperties properties;
@@ -60,7 +53,8 @@ public class LoadTestRunner implements CommandLineRunner {
         String appContainerName = entry.getKey();
         AppContainerConfig config = entry.getValue();
         log.info("========== {} ==========", appContainerName);
-        try (AppContainer appContainer = new AppContainer(appContainerName, config)) {
+        try (AppContainer appContainer =
+            new AppContainer(appContainerName, config, properties.getContainerMemory().toBytes())) {
           appContainer.start();
 
           log.info("-----------------------------");
@@ -147,20 +141,8 @@ public class LoadTestRunner implements CommandLineRunner {
   }
 
   private double getStartUpTime(AppContainer appContainer, AppType appType) {
-    Pattern pattern =
-        switch (appType) {
-          case QUARKUS -> PATTERN_QUARKUS;
-          case MICRONAUT -> PATTERN_MICRONAUT;
-          default -> PATTERN_SPRING_BOOT;
-        };
-    Matcher matcher = pattern.matcher(appContainer.getLogs());
-    double value = -1.0;
-    if (matcher.find()) {
-      value = Double.parseDouble(matcher.group(1));
-      if (appType == AppType.MICRONAUT) {
-        value /= 1000;
-      }
-    } else {
+    double value = appType.parseStartUpTime(appContainer.getLogs());
+    if (value == -1.0) {
       log.error("Unable to get the startup time!");
     }
     return value;

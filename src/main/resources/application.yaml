@@ -7,6 +7,7 @@ cadvisor:
   browser-command: "open -a \"Brave Browser\" -n --args --incognito http://localhost:%s/docker/%s"
 load-test-runner:
   container-runtime: podman
+  container-memory: 1GB
 ---
 spring:
   config.activate.on-profile: springboot

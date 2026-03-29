@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
 
 import lombok.Getter;
@@ -26,6 +27,8 @@ public class LoadTestRunnerProperties {
   private Integer pauseBetweenTestsMillis;
 
   @NotNull private ContainerRuntime containerRuntime;
+
+  @NotNull private DataSize containerMemory;
 
   @NotNull private List<OhaParameter> ohaParameters;
 

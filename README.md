@@ -54,6 +54,7 @@ All configuration lives in `src/main/resources/application.yaml`. The applicatio
 - **`cadvisor.open-browser`** — Automatically open the cAdvisor UI in the browser (default: `false`)
 - **`load-test-runner.num-requests-and-concurrency`** — List of `numRequests:concurrency` pairs (default: `100:100`, `300:300`, `900:900`, `2700:2700`)
 - **`load-test-runner.pause-millis`** — Pause in milliseconds between load-test submissions (default: `3000`)
+- **`load-test-runner.container-memory`** — Memory limit applied to each benchmarked container (default: `1GB`). Accepts standard suffixes: `MB`, `GB`.
 - **`load-test-runner.app-containers`** — Map of Docker containers to benchmark. Each entry supports:
   ```yaml
   <docker-container-name>:

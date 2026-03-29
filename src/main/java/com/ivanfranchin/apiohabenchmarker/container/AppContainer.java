@@ -16,13 +16,12 @@ import com.ivanfranchin.apiohabenchmarker.properties.AppContainerConfig;
 @Getter
 public class AppContainer extends GenericContainer<AppContainer> {
 
-  private static final long MAX_MEMORY = (long) 1024 * 1024 * 1024;
   private static final int DEFAULT_PORT = 8080;
   private static final Duration STARTUP_TIMEOUT = Duration.ofMinutes(2);
 
   private final int exposedPort;
 
-  public AppContainer(String containerName, AppContainerConfig config) {
+  public AppContainer(String containerName, AppContainerConfig config, long containerMemoryBytes) {
     super(DockerImageName.parse(config.dockerImageName()));
     this.exposedPort = config.exposedPort() == null ? DEFAULT_PORT : config.exposedPort();
 
@@ -32,7 +31,7 @@ public class AppContainer extends GenericContainer<AppContainer> {
             .withCreateContainerCmdModifier(
                 cmd ->
                     cmd.withName(containerName)
-                        .withHostConfig(cmd.getHostConfig().withMemory(MAX_MEMORY)));
+                        .withHostConfig(cmd.getHostConfig().withMemory(containerMemoryBytes)));
     if (StringUtils.hasText(config.network())) {
       container.withNetwork(getNetworkByName(config.network()));
     }
