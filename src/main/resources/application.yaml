@@ -5,6 +5,8 @@ cadvisor:
   enabled: false
   open-browser: false
   browser-command: "open -a \"Brave Browser\" -n --args --incognito http://localhost:%s/docker/%s"
+load-test-runner:
+  container-runtime: podman
 ---
 spring:
   config.activate.on-profile: springboot

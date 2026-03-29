@@ -16,8 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import com.ivanfranchin.apiohabenchmarker.browser.BrowserOpener;
 import com.ivanfranchin.apiohabenchmarker.container.AppContainer;
 import com.ivanfranchin.apiohabenchmarker.container.CadvisorContainer;
+import com.ivanfranchin.apiohabenchmarker.processor.ContainerStatsProcessor;
 import com.ivanfranchin.apiohabenchmarker.processor.DockerStatsProcessor;
 import com.ivanfranchin.apiohabenchmarker.processor.OhaProcessor;
+import com.ivanfranchin.apiohabenchmarker.processor.PodmanStatsProcessor;
 import com.ivanfranchin.apiohabenchmarker.properties.AppContainerConfig;
 import com.ivanfranchin.apiohabenchmarker.properties.AppType;
 import com.ivanfranchin.apiohabenchmarker.properties.CadvisorProperties;
@@ -66,9 +68,9 @@ public class LoadTestRunner implements CommandLineRunner {
 
           waitForContainerToStart();
 
-          DockerStatsProcessor dockerStatsProcessor = new DockerStatsProcessor(appContainerName);
-          Thread dockerStatsProcessorThread = new Thread(dockerStatsProcessor);
-          dockerStatsProcessorThread.start();
+          ContainerStatsProcessor containerStatsProcessor = createStatsProcessor(appContainerName);
+          Thread containerStatsProcessorThread = new Thread(containerStatsProcessor);
+          containerStatsProcessorThread.start();
 
           double startUpTime = getStartUpTime(appContainer, config.appType());
           log.info("StartUp time: {}s", startUpTime);
@@ -92,15 +94,15 @@ public class LoadTestRunner implements CommandLineRunner {
             pauseBetweenTests();
           }
 
-          dockerStatsProcessor.stop();
+          containerStatsProcessor.stop();
           try {
-            dockerStatsProcessorThread.join();
+            containerStatsProcessorThread.join();
           } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
           }
-          double maxCpuUsage = dockerStatsProcessor.getMaxCpuUsage();
-          double maxMemUsage = dockerStatsProcessor.getMaxMemUsage();
+          double maxCpuUsage = containerStatsProcessor.getMaxCpuUsage();
+          double maxMemUsage = containerStatsProcessor.getMaxMemUsage();
           log.info("Max CPU usage:\t{}%", maxCpuUsage);
           log.info("Max memory usage:\t{}MB", maxMemUsage);
 
@@ -135,6 +137,13 @@ public class LoadTestRunner implements CommandLineRunner {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private ContainerStatsProcessor createStatsProcessor(String containerName) {
+    return switch (properties.getContainerRuntime()) {
+      case DOCKER -> new DockerStatsProcessor(containerName);
+      case PODMAN -> new PodmanStatsProcessor(containerName);
+    };
   }
 
   private double getStartUpTime(AppContainer appContainer, AppType appType) {

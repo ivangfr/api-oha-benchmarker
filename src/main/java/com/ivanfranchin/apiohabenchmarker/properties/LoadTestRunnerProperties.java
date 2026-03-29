@@ -25,6 +25,8 @@ public class LoadTestRunnerProperties {
   @Min(1000)
   private Integer pauseBetweenTestsMillis;
 
+  @NotNull private ContainerRuntime containerRuntime;
+
   @NotNull private List<OhaParameter> ohaParameters;
 
   @NotNull @NotEmpty private Map<String, AppContainerConfig> appContainers;
