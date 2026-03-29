@@ -124,6 +124,8 @@ load-test-runner:
 ---
 spring:
   config.activate.on-profile: webserver
+  # The articles in this Medium library https://medium.com/@ivangfr/list/embedded-web-server-benchmark-f15387e3cdfd
+  # explain how to create the greetings-api Docker images used below.
 load-test-runner:
   ohaParameters:
     - numRequests: 100
