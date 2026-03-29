@@ -17,7 +17,7 @@ public class BrowserOpener {
   public void open(String containerId, Integer containerMappedPort) {
     try {
       String browserCommand =
-          cadvisorProperties.browserCommand().formatted(containerId, containerMappedPort);
+          cadvisorProperties.browserCommand().formatted(containerMappedPort, containerId);
       ProcessBuilder processBuilder = new ProcessBuilder("sh", "-c", browserCommand);
       Process process = processBuilder.start();
       int exitCode = process.waitFor();
