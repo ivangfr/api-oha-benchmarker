@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class ApiOhaBenchmarkerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ApiOhaBenchmarkerApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(ApiOhaBenchmarkerApplication.class, args);
+  }
 }

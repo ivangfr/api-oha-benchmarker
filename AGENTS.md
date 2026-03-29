@@ -15,8 +15,8 @@ This file provides context, conventions, and commands for AI coding agents worki
 | Layer | Technology |
 |---|---|
 | Language | Java 25 (GraalVM CE 25.0.1 recommended) |
-| Framework | Spring Boot 4.0.2 (non-web, CommandLineRunner) |
-| Build | Apache Maven 3.9.12 via Maven Wrapper (`./mvnw`) |
+| Framework | Spring Boot 4.0.5 (non-web, CommandLineRunner) |
+| Build | Apache Maven 3.9.14 via Maven Wrapper (`./mvnw`) |
 | Containers | Testcontainers (used in production, not just tests) |
 | Load testing | `oha` CLI (external binary, called via `ProcessBuilder`) |
 | Metrics | cAdvisor container + `docker container stats` |
@@ -31,6 +31,12 @@ This file provides context, conventions, and commands for AI coding agents worki
 ```bash
 # Compile
 ./mvnw compile
+
+# Check formatting (enforced on ./mvnw verify)
+./mvnw spotless:check
+
+# Fix formatting
+./mvnw spotless:apply
 
 # Run all tests
 ./mvnw test
@@ -81,9 +87,9 @@ src/main/java/com/ivanfranchin/apiohabenchmarker/
 │   └── CadvisorContainer.java          # GenericContainer wrapper for cAdvisor
 ├── processor/
 │   ├── DockerStatsProcessor.java       # Background thread streaming `docker stats`
-│   └── OhaProcessor.java              # Runs `oha` CLI, parses JSON-ish output
+│   └── OhaProcessor.java              # Runs `oha` CLI, parses plain-text output line-by-line
 ├── properties/
-│   ├── AppContainerConfig.java         # Record: per-container YAML config
+│   ├── AppContainerConfig.java         # Record: per-container YAML config (dockerImageName, environment, exposedPort, appType, network)
 │   ├── AppType.java                    # Enum: SPRING_BOOT, QUARKUS, MICRONAUT
 │   ├── CadvisorProperties.java         # Record: @ConfigurationProperties("cadvisor")
 │   ├── LoadTestRunnerProperties.java   # Class: @ConfigurationProperties("load-test-runner")
@@ -103,11 +109,14 @@ src/main/java/com/ivanfranchin/apiohabenchmarker/
 
 ### Formatting
 
-- **4-space indentation** (no tabs).
+- **2-space indentation** (no tabs).
 - Opening braces on the **same line** (K&R style).
 - Single blank line between methods.
 - No trailing whitespace.
-- No enforced formatter at build time — there is no Checkstyle or Spotless plugin. Follow the conventions already present in the source.
+- Formatting is enforced automatically by the Spotless Maven plugin (google-java-format, GOOGLE style):
+  - Check: `./mvnw spotless:check`
+  - Fix:   `./mvnw spotless:apply`
+- The `spotless:check` goal is bound to the `verify` phase and runs automatically with `./mvnw verify`.
 
 ### Imports
 
@@ -154,7 +163,7 @@ src/main/java/com/ivanfranchin/apiohabenchmarker/
 - All configuration lives in `src/main/resources/application.yaml`.
 - Use `---` YAML document separators with `spring.config.activate.on-profile` for profile-specific config.
 - Bind configuration via `@ConfigurationProperties` classes/records, registered via `@ConfigurationPropertiesScan` on the main application class.
-- Annotate `@ConfigurationProperties` beans with Jakarta Validation annotations (`@NotNull`, `@NotEmpty`, `@Valid`) where constraints are required.
+- Annotate `@ConfigurationProperties` beans with Jakarta Validation annotations (`@NotNull`, `@NotEmpty`, `@Valid`, `@Min`) where constraints are required; use Spring's `@Validated` on the class to activate them.
 
 ---
 

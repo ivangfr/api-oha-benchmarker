@@ -30,7 +30,8 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 ## Prerequisites
 
 - [`Java 25`](https://www.oracle.com/java/technologies/downloads/#java25) or higher;
-- A containerization tool (e.g., [`Docker`](https://www.docker.com), [`Podman`](https://podman.io), etc.)
+- A containerization tool (e.g., [`Docker`](https://www.docker.com), [`Podman`](https://podman.io), etc.);
+- [`oha`](https://github.com/hatoo/oha)
 
 ## Configuration
 
@@ -66,3 +67,19 @@ All the configuration is done in the `application.yaml` where you can set:
   ```bash
   ./mvnw clean spring-boot:run -Dspring-boot.run.profiles=springboot
   ```
+
+## Code Formatting
+
+This project enforces consistent Java formatting using the [Spotless](https://github.com/diffplug/spotless) Maven plugin with [google-java-format](https://github.com/google/google-java-format) (GOOGLE style).
+
+**Check formatting:**
+```bash
+./mvnw spotless:check
+```
+
+**Auto-fix formatting:**
+```bash
+./mvnw spotless:apply
+```
+
+Formatting is also verified automatically as part of `./mvnw verify` (bound to the `verify` phase).
