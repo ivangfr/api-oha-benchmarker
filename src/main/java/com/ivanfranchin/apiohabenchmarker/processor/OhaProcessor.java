@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -13,8 +16,8 @@ public class OhaProcessor {
 
     private static final String OHA_COMMAND = "oha -n %s -c %s -u s --latency-correction --disable-keepalive --disable-color --no-tui http://localhost:%s/%s";
 
-    public double[] run(int numRequests, int concurrency, int containerMappedPort, String endpoint) {
-        double[] ohaMetrics;
+    public List<Double> run(int numRequests, int concurrency, int containerMappedPort, String endpoint) {
+        List<Double> ohaMetrics;
         try {
             String ohaCommand = OHA_COMMAND.formatted(numRequests, concurrency, containerMappedPort, endpoint);
             log.info("oha command: {}", ohaCommand);
@@ -26,24 +29,27 @@ public class OhaProcessor {
             }
             int exitCode = process.waitFor();
             log.debug("Exited with code: {}", exitCode);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
         return ohaMetrics;
     }
 
-    private double[] processLines(BufferedReader reader) throws IOException {
-        double[] metrics = new double[6];
+    private List<Double> processLines(BufferedReader reader) throws IOException {
+        List<Double> metrics = new ArrayList<>(Collections.nCopies(LINES_TO_PARSE.length, 0.0));
         String line;
         while ((line = reader.readLine()) != null) {
             line = line.replaceAll("\\x1B\\[[;\\d]*m", "").trim();
             int idx = findColumn(line);
             if (idx >= 0) {
                 log.info(line);
-                metrics[idx] = parseValue(line);
+                metrics.set(idx, parseValue(line));
             }
         }
-        return metrics;
+        return Collections.unmodifiableList(metrics);
     }
 
     private double parseValue(String line) {

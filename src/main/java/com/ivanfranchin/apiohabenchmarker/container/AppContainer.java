@@ -34,7 +34,7 @@ public class AppContainer extends GenericContainer<AppContainer> {
         }
         if (config.environment() != null) {
             for (String envStr : config.environment()) {
-                String[] envArr = envStr.split("=");
+                String[] envArr = envStr.split("=", 2);
                 container.withEnv(envArr[0], envArr[1]);
             }
         }

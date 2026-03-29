@@ -16,7 +16,7 @@ public class DockerStatsProcessor implements Runnable {
     @Getter
     private double maxMemUsage = -1.0;
 
-    private boolean stop;
+    private volatile boolean stop;
 
     public void stop() {
         this.stop = true;
@@ -30,10 +30,11 @@ public class DockerStatsProcessor implements Runnable {
 
     @Override
     public void run() {
+        String[] command = {"docker", "container", "stats", containerName, "--format", "{{.CPUPerc}} {{.MemUsage}}"};
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        Process process = null;
         try {
-            String[] command = {"docker", "container", "stats", containerName, "--format", "{{.CPUPerc}} {{.MemUsage}}"};
-            ProcessBuilder processBuilder = new ProcessBuilder(command);
-            Process process = processBuilder.start();
+            process = processBuilder.start();
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
@@ -41,7 +42,8 @@ public class DockerStatsProcessor implements Runnable {
                     Matcher matcher = PATTERN.matcher(line);
                     if (matcher.find()) {
                         double cpuUsage = Double.parseDouble(matcher.group(1));
-                        double memUsage = Double.parseDouble(matcher.group(2));
+                        double rawMem = Double.parseDouble(matcher.group(2));
+                        double memUsage = "GiB".equals(matcher.group(3)) ? rawMem * 1024 : rawMem;
                         maxCpuUsage = Math.max(maxCpuUsage, cpuUsage);
                         maxMemUsage = Math.max(maxMemUsage, memUsage);
                         log.debug("CPU Usage: {}, Memory Usage: {}, Max CPU Usage: {}, Max Memory Usage: {}",
@@ -54,10 +56,14 @@ public class DockerStatsProcessor implements Runnable {
             }
         } catch (Exception e) {
             log.error("Unable to run docker stats", e);
+        } finally {
+            if (process != null) {
+                process.destroyForcibly();
+            }
         }
     }
 
-    private static final String REGEX = "(\\d+\\.\\d+)%\\s+(\\d+\\.\\d+)MiB";
+    private static final String REGEX = "(\\d+\\.\\d+)%\\s+(\\d+\\.\\d+)(MiB|GiB)";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
 }

@@ -7,6 +7,7 @@ import com.ivanfranchin.apiohabenchmarker.processor.DockerStatsProcessor;
 import com.ivanfranchin.apiohabenchmarker.processor.OhaProcessor;
 import com.ivanfranchin.apiohabenchmarker.properties.AppContainerConfig;
 import com.ivanfranchin.apiohabenchmarker.properties.AppType;
+import com.ivanfranchin.apiohabenchmarker.properties.CadvisorProperties;
 import com.ivanfranchin.apiohabenchmarker.properties.LoadTestRunnerProperties;
 import com.ivanfranchin.apiohabenchmarker.properties.OhaParameter;
 import com.ivanfranchin.apiohabenchmarker.result.AppResult;
@@ -14,12 +15,11 @@ import com.ivanfranchin.apiohabenchmarker.result.LoadTestResult;
 import com.ivanfranchin.apiohabenchmarker.writer.ResultFileWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -30,28 +30,30 @@ import java.util.regex.Pattern;
 @Component
 public class LoadTestRunner implements CommandLineRunner {
 
+    private static final Pattern PATTERN_SPRING_BOOT = Pattern.compile("in ([\\d.]+) seconds");
+    private static final Pattern PATTERN_QUARKUS     = Pattern.compile("started in ([\\d.]+)s");
+    private static final Pattern PATTERN_MICRONAUT   = Pattern.compile("Startup completed in ([\\d.]+)ms");
+
     private final BrowserOpener browserOpener;
     private final OhaProcessor ohaProcessor;
     private final LoadTestRunnerProperties properties;
-
-    @Value("${cadvisor.enabled}")
-    private boolean isCadvisorEnabled;
-
-    @Value("${cadvisor.open-browser}")
-    private boolean openBrowser;
+    private final CadvisorProperties cadvisorProperties;
+    private final ResultFileWriter resultFileWriter;
 
     @Override
     public void run(String... args) {
 
-        try (CadvisorContainer cadvisorContainer = new CadvisorContainer()) {
-            if (isCadvisorEnabled) {
+        CadvisorContainer cadvisorContainer = cadvisorProperties.enabled() ? new CadvisorContainer() : null;
+        try {
+            if (cadvisorContainer != null) {
                 cadvisorContainer.start();
             }
 
             Map<String, AppResult> appResultMap = new LinkedHashMap<>();
-            for (String appContainerName : properties.getAppContainers().keySet()) {
+            for (Map.Entry<String, AppContainerConfig> entry : properties.getAppContainers().entrySet()) {
+                String appContainerName = entry.getKey();
+                AppContainerConfig config = entry.getValue();
                 log.info("========== {} ==========", appContainerName);
-                AppContainerConfig config = properties.getAppContainers().get(appContainerName);
                 try (AppContainer appContainer = new AppContainer(appContainerName, config)) {
                     appContainer.start();
 
@@ -67,23 +69,29 @@ public class LoadTestRunner implements CommandLineRunner {
                     double startUpTime = getStartUpTime(appContainer, config.appType());
                     log.info("StartUp time: {}s", startUpTime);
 
-                    if (isCadvisorEnabled && openBrowser) {
+                    if (cadvisorContainer != null && cadvisorProperties.openBrowser()) {
                         browserOpener.open(appContainer.getContainerId(), cadvisorContainer.getHostPort());
                     }
 
-                    List<LoadTestResult> loadTestResults = new LinkedList<>();
+                    List<LoadTestResult> loadTestResults = new ArrayList<>();
                     for (OhaParameter ohaParameter : properties.getOhaParameters()) {
                         int numRequests = ohaParameter.numRequests();
                         int concurrency = ohaParameter.concurrency();
                         String endpoint = ohaParameter.endpoint().startsWith("/") ?
                                 ohaParameter.endpoint().substring(1) : ohaParameter.endpoint();
-                        double[] ohaMetrics = ohaProcessor.run(numRequests, concurrency, appContainer.getHostPort(), endpoint);
+                        List<Double> ohaMetrics = ohaProcessor.run(numRequests, concurrency, appContainer.getHostPort(), endpoint);
                         loadTestResults.add(new LoadTestResult(numRequests, concurrency, endpoint, ohaMetrics));
 
                         pauseBetweenTests();
                     }
 
                     dockerStatsProcessor.stop();
+                    try {
+                        dockerStatsProcessorThread.join();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(e);
+                    }
                     double maxCpuUsage = dockerStatsProcessor.getMaxCpuUsage();
                     double maxMemUsage = dockerStatsProcessor.getMaxMemUsage();
                     log.info("Max CPU usage:\t{}%", maxCpuUsage);
@@ -92,7 +100,11 @@ public class LoadTestRunner implements CommandLineRunner {
                     appResultMap.put(appContainerName, new AppResult(startUpTime, maxCpuUsage, maxMemUsage, loadTestResults));
                 }
             }
-            ResultFileWriter.write(appResultMap);
+            resultFileWriter.write(appResultMap);
+        } finally {
+            if (cadvisorContainer != null) {
+                cadvisorContainer.close();
+            }
         }
     }
 
@@ -117,13 +129,11 @@ public class LoadTestRunner implements CommandLineRunner {
     }
 
     private double getStartUpTime(AppContainer appContainer, AppType appType) {
-        String regex = "in ([\\d.]+) seconds";
-        if (appType == AppType.QUARKUS) {
-            regex = "started in ([\\d.]+)s";
-        } else if (appType == AppType.MICRONAUT) {
-            regex = "Startup completed in ([\\d.]+)ms";
-        }
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = switch (appType) {
+            case QUARKUS   -> PATTERN_QUARKUS;
+            case MICRONAUT -> PATTERN_MICRONAUT;
+            default        -> PATTERN_SPRING_BOOT;
+        };
         Matcher matcher = pattern.matcher(appContainer.getLogs());
         double value = -1.0;
         if (matcher.find()) {

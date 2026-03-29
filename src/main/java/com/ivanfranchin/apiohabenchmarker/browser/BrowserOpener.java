@@ -1,17 +1,21 @@
 package com.ivanfranchin.apiohabenchmarker.browser;
 
+import com.ivanfranchin.apiohabenchmarker.properties.CadvisorProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class BrowserOpener {
 
-    private static final String BROWSER_COMMAND = "open -a \"Brave Browser\" -n --args --incognito http://localhost:%s/docker/%s";
+    private final CadvisorProperties cadvisorProperties;
 
     public void open(String containerId, Integer containerMappedPort) {
         try {
-            String browserCommand = BROWSER_COMMAND.formatted(containerMappedPort, containerId);
+            String browserCommand = cadvisorProperties.browserCommand()
+                    .formatted(containerId, containerMappedPort);
             ProcessBuilder processBuilder = new ProcessBuilder("sh", "-c", browserCommand);
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
